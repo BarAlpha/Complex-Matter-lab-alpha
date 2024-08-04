@@ -12,12 +12,12 @@ max_list_of_freq = [];
 min_list_of_freq = [];
 
 for i = 1:length(start_arr)
-s_time_index = find(time_of_events>=start_arr(i),1);
-e_time_index = find(time_of_events>=end_arr(i),1); 
-min_freq_of_event = min(min_freq(s_time_index:e_time_index));
-max_freq_of_event = max(max_freq(s_time_index:e_time_index));
-max_list_of_freq = [max_list_of_freq,max_freq_of_event];
-min_list_of_freq = [min_list_of_freq,min_freq_of_event];
+    s_time_index = find(time_of_events>=start_arr(i),1);
+    e_time_index = find(time_of_events>=end_arr(i),1); 
+    min_freq_of_event = min(min_freq(s_time_index:e_time_index));
+    max_freq_of_event = max(max_freq(s_time_index:e_time_index));
+    max_list_of_freq = [max_list_of_freq,max_freq_of_event];
+    min_list_of_freq = [min_list_of_freq,min_freq_of_event];
 end
 
 frequency_mean_list = [];
