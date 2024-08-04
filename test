@@ -1,0 +1,42 @@
+project_folder='F:\Dor\measure_acoustics\'; % name of folder to save stuff inside
+file_name_to_save='test2'; % name of current project file
+measurement_time= 5 ; % length of acoustic measurement in seconds
+
+measure_from_one_mic(project_folder,file_name_to_save,measurement_time) % measure 10 secs
+
+[mice,time]=load_mic_data_from_text_file('test2_audio.txt'); % load the measurement
+
+mic = highpass(mice,1000,192000);
+
+save('mic_file.mat', 'mic');
+save('time_file.mat', 'time');
+
+figure(); hold on; box on;
+subplot(2,1,1);
+plot(time,mic) % plot mic readout vs time
+
+xlabel('time [sec]')
+ylabel('acoustic signal [arb]')
+
+
+pulse_sampling = 300; %set to 100
+noverlap = floor(pulse_sampling*0.9);
+nfft = 2^nextpow2(pulse_sampling);
+fs = 192000; %set to 192000
+
+%spectrogram of the frequency against time
+[S,f,time_of_events] =spectrogram(mic,hamming(pulse_sampling),noverlap,nfft,fs);
+  
+S_real = abs(S);
+
+subplot(2,1,2);
+imagesc(time_of_events,f,10*log10(S_real));
+colorbar;
+axis xy;
+
+xlabel('time [sec]','Color',[0.12,0.12,0.6]);
+ylabel('frequency [hz]','Color',[0.12,0.12,0.6]);
+
+thresh = 0.0005;
+
+[frequency_mean_list,start_arr,end_arr,max_list_of_freq,min_list_of_freq,time_of_events,mean_amplitude,start_amplitude,end_amplitude] = ridge_analyze('10L_0.014.mat',time_of_events,S,f,mic,time,thresh);
