@@ -1,0 +1,25 @@
+function [frequency_mean_list,start_arr,end_arr,max_list_of_freq,min_list_of_freq,time_of_events,mean_amplitude,start_amplitude,end_amplitude] = ridge_analyze(file_name,time_of_events,S,f,mic,time,thresh)
+%a function which recieves all the neccesary information in order to find
+%max, min, and mean frequencies, the times of events and their start and
+%end emplitude, and saves them all inculding the complete time and mic
+%rcording in a textfile on matlab.
+
+[start_arr,end_arr] = find_events(thresh,mic,time);
+
+[frequency_mean_list, max_list_of_freq, min_list_of_freq,max_freq] = spect_analyze(S,f,time_of_events,start_arr,end_arr);  
+
+mean_amplitude = [];
+start_amplitude = [];
+end_amplitude = [];
+for i = 1:length(start_arr)
+    index_start = find(time_of_events>=start_arr(i),1);
+    index_end = find(time_of_events>=end_arr(i),1);
+    start_amplitude = [start_amplitude, max_freq(index_start)];
+    end_amplitude = [end_amplitude, max_freq(index_end)];
+    mean_amplitude = [mean_amplitude, mean(max_freq(index_start:index_end))];
+end
+if ~isempty(file_name)
+    save(file_name,'max_list_of_freq','min_list_of_freq','start_arr','end_arr','mic','time','time_of_events','mean_amplitude' ...
+        ,"end_amplitude",'start_amplitude','frequency_mean_list')
+end
+end
