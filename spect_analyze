@@ -1,0 +1,36 @@
+function [frequency_mean_list, max_list_of_freq, min_list_of_freq,max_freq] = spect_analyze(S,f,time_of_events,start_arr,end_arr)
+%a function which gets the frequency and amplitude of an acoustic signal
+%and outputs the most common frequency for each time, the max and min
+%frequency of each event
+S_real = abs(S);
+[~,I] = max(10*log10(S_real),[],1);
+max_freq = f(I);
+[~,L] = min(10*log10(S_real),[],1);
+min_freq = f(L);
+
+max_list_of_freq = [];
+min_list_of_freq = [];
+
+for i = 1:length(start_arr)
+s_time_index = find(time_of_events>=start_arr(i),1);
+e_time_index = find(time_of_events>=end_arr(i),1); 
+min_freq_of_event = min(min_freq(s_time_index:e_time_index));
+max_freq_of_event = max(max_freq(s_time_index:e_time_index));
+max_list_of_freq = [max_list_of_freq,max_freq_of_event];
+min_list_of_freq = [min_list_of_freq,min_freq_of_event];
+end
+
+frequency_mean_list = [];
+
+for j = 1:length(time_of_events)
+    S_f = 0;
+    sum_amplitudes = 0 ;
+    s_list = S_real(:,j);
+    for i = 1:length(f)
+        S_f = S_f +s_list(i)*f(i);
+        sum_amplitudes = sum_amplitudes + s_list(i);
+    end
+    calculated_mean = S_f/sum_amplitudes;
+    frequency_mean_list = [frequency_mean_list, calculated_mean];
+end
+end
