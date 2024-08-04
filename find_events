@@ -1,0 +1,42 @@
+function [start_arr,end_arr] = find_events(thresh,mic,time,display_data)
+%a function which gets the mic, the time, and the threshold needed to be
+%overcome in order for the times to be considered events. the function
+%outputs the start and end time of the 'true' events respectivly.
+
+if ~exist('display_data','var')%checks if theres a need to display data
+    display_data = false;
+end
+
+threshold = thresh; % threshold set to 0.03
+
+index = (abs(mic)>threshold);
+event_list = mic(index);
+event_time = time(index);
+time_diff = diff(event_time);
+
+if display_data
+    disp(event_list)
+    disp(event_time) % displaying events (time and arb)
+    disp(time_diff)
+end
+
+start_arr = [event_time(1)];
+t_max = 0.01;
+end_arr = []; 
+
+for index_of_current_event =  1:(length(event_time)-1)
+    time_of_current_event = event_time(index_of_current_event);
+    time_of_next_event = event_time(index_of_current_event+1);
+    if abs(time_of_current_event - time_of_next_event) >= t_max
+        start_arr = [start_arr, time_of_next_event];
+        end_arr = [end_arr, time_of_current_event];
+    end
+end
+
+%displaying the times of events
+
+end_arr = [end_arr, event_time(end)];
+if display_data
+    disp(table(start_arr',end_arr','VariableNames',{'start_arr','end_arrr'}))
+end
+end
