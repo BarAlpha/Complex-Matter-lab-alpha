@@ -1,0 +1,36 @@
+function [biggest_event_index,energy_list] = energy_amount_in_event(start_arr,end_arr,mic)
+
+pulse_sampling = 300; %set to 100
+noverlap = floor(pulse_sampling*0.9);
+nfft = 2^nextpow2(pulse_sampling);
+fs = 192000; %set to 192000
+
+[S,~,time_of_events] =spectrogram(mic,hamming(pulse_sampling),noverlap,nfft,fs);
+S_real = abs(S);
+x = [];
+
+for j = 1:257
+    x = [x, j];
+end
+
+list_of_start_index = []; 
+list_of_end_index = [];
+energy_list = []; 
+
+for i = 1:length(start_arr)
+    energy_of_event = 0;
+
+    list_of_start_index = [list_of_start_index , find(time_of_events>= start_arr(i),1)];
+    list_of_end_index = [list_of_end_index , find(time_of_events>= end_arr(i),1)];
+    
+    for k = list_of_start_index(i):list_of_end_index(i)
+        s_array = S_real(:,k);
+        z = trapz(x,abs(real(s_array)));
+        energy_of_event = energy_of_event + z;
+    end
+    
+    energy_list = [energy_list, energy_of_event];
+end
+
+biggest_event_index = find(energy_list == max(energy_list));
+end
